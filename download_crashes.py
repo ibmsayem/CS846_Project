@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fetch crash UUIDs from Socorro SuperSearch, download full ProcessedCrash JSON, store as JSONL."""
 
-# 
+#
 
 import argparse, json, logging, os, random, time
 from datetime import datetime, timedelta
@@ -84,6 +84,8 @@ def uuids_iteration(session, start, end, product, per_page, max_n, sort,
         for u in gen:
             yield u; total += 1
             if max_n and total >= max_n: return
+    
+    # downaload by hour or day to avoid hitting the 10k limit, with optional max per day; if neither, do one big query (which may miss some if >10k)
 
     if by_hour:
         s, e = datetime.fromisoformat(start.replace("Z","")), datetime.fromisoformat(end.replace("Z",""))
@@ -92,6 +94,7 @@ def uuids_iteration(session, start, end, product, per_page, max_n, sort,
             fmt = lambda d: d.strftime("%Y-%m-%dT%H:%M:%S")
             yield from counted(page_range(fmt(s), fmt(n), None)); s = n
             if max_n and total >= max_n: return
+    # download by day
     elif by_day:
         s, e = datetime.strptime(start, "%Y-%m-%d"), datetime.strptime(end, "%Y-%m-%d")
         while s < e:
@@ -110,7 +113,7 @@ def load_done(path):
         except: pass
     return done
 
-
+# Main download function: parse args, set up session, iterate UUIDs, fetch crashes, write output, handle retries and logging.
 def main():
     p = argparse.ArgumentParser(description="Download ProcessedCrash JSON from Socorro.")
     a = p.add_argument
