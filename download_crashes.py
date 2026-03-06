@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Fetch crash UUIDs from Socorro SuperSearch, download full ProcessedCrash JSON, store as JSONL."""
 
+# 
+
 import argparse, json, logging, os, random, time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -10,6 +12,7 @@ log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 API = "https://crash-stats.mozilla.org/api"
+SUPERSEARCH_URL = f"{API}/SuperSearch/"
 MAX_WINDOW = 10_000
 
 
@@ -39,7 +42,8 @@ def retry_get(session, url, params, timeout, retries, base):
                 raise
     raise RuntimeError("unreachable")
 
-
+# The output line format should be:
+# {"uuid": "...", "ok": true/false, "http_status": ..., "error": "...", "processed_crash": {...} or null}
 def fetch_crash(session, uuid, timeout, retries, base):
     try:
         r = retry_get(session, f"{API}/ProcessedCrash/", {"crash_id": uuid}, timeout, retries, base)
@@ -50,7 +54,7 @@ def fetch_crash(session, uuid, timeout, retries, base):
         return {"uuid": uuid, "ok": False, "http_status": 0, "error": str(e), "processed_crash": None}
 
 
-def iter_uuids(session, start, end, product, per_page, max_n, sort,
+def uuids_iteration(session, start, end, product, per_page, max_n, sort,
                by_day, by_hour, window_hours, max_per_day, ss_timeout, ss_sleep, retries, base):
     def page_range(rs, re, limit):
         page, got = 1, 0
@@ -136,7 +140,7 @@ def main():
     ok = fail = 0
     ss_to = args.ss_timeout or args.timeout
     with out.open("a") as f:
-        for uuid in iter_uuids(sess, args.start_date, args.end_date, args.product or None,
+        for uuid in uuids_iteration(sess, args.start_date, args.end_date, args.product or None,
                                args.per_page, args.max_crashes, args.sort, args.by_day,
                                args.by_hour, args.window_hours, args.max_per_day,
                                ss_to, args.ss_sleep, args.max_retries, args.backoff_base):
