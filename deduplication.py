@@ -17,7 +17,7 @@ class FrameEntry:
     Attributes
 
     frame_id : str
-        Normalised subroutine/function name (the identifier *f*).
+        Normalized subroutine/function name (the identifier *f*).
     position : int
         1-based position from the top of the stack trace (*p*).
         Top-of-stack = 1.
@@ -44,7 +44,7 @@ class StackTrace:
         format required by Algorithm 1.
     weight_sum : float
         Σ w(f_p) for every frame in this trace.  Pre-computed so that
-        the normalisation denominator (line 23) can be looked up in O(1).
+        the normalization denominator (line 23) can be looked up in O(1).
     """
     uuid: str
     signature: str
