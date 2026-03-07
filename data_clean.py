@@ -4,31 +4,30 @@
 import numpy as np
 # import pandas as pd
 import re
-import json
 
 
 
 
-records = []
 
-with open('test.jsonl', 'r') as f:
-    for lineno, line in enumerate(f, 1):
-        line  = line.strip()
-        if not line:
-            continue  # Skip empty lines
-        try:
-            records.append(json.loads(line))
-        except json.JSONDecodeError as e:
-            print(f"Error decoding JSON on line {lineno}: {e}")
+# records = []
 
-print(f"Total records read: {len(records)}")
+# with open('test.jsonl', 'r') as f:
+#     for lineno, line in enumerate(f, 1):
+#         line  = line.strip()
+#         if not line:
+#             continue  # Skip empty lines
+#         try:
+#             records.append(json.loads(line))
+#         except json.JSONDecodeError as e:
+#             print(f"Error decoding JSON on line {lineno}: {e}")
+
+# print(f"Total records read: {len(records)}")
 
 """
 data_cleaning.py
------------------
+
 Load Mozilla Socorro crash reports from a JSONL file, extract stack traces
-from the crashing thread, clean / normalize frame identifiers so they
-are ready for the FaST similarity algorithm.
+from the crashing thread, clean / normalize frame identifiers
 
 Each crash report is reduced to a lightweight dict:
     {
