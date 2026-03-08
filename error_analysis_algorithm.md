@@ -8,7 +8,7 @@
 
 ```
 ALGORITHM OverClusteringDetection(clusters, traces, sim_func)
-────────────────────────────────────────────────────────────────
+
 INPUT:
     clusters    : list of clusters, each cluster is a list of report IDs
     traces      : map of report ID → stack trace
@@ -92,4 +92,111 @@ RETURN merge_errors, aliased_sigs
 
 ---
 
+## Algorithm 2: Under-Clustering Detection
+
+> Detects bugs that are **incorrectly split** across multiple clusters.
+
+```
+ALGORITHM UnderClusteringDetection(clusters, traces, sim_func)
+
+INPUT:
+    clusters : list of clusters, each cluster is a list of report IDs
+    traces     : map of report ID → stack trace
+    sim_func   : function(trace_a, trace_b) → similarity score in [-1, +1]
+
+OUTPUT:
+    cross_sig_dupes : cluster pairs from different signatures that are the same bug
+    mis_bucketed    : individual reports sitting in the wrong cluster
+    fragments       : tiny clusters that are pieces of a larger bug
+
+CONSTANTS:
+    CROSS_THRESHOLD     = 0.35  (if cross-sign similarity is above this, same bug)
+    REBUCKET_THRESHOLD  = 0.30  (report only moved if alternative clears this floor)
+    FRAGMENT_THRESHOLD  = 0.20  (tiny cluster is a fragment if it clears this)
+    TINY_MAX_SIZE       = 2     (clusters this size or smaller are fragment candidates)
+    LARGE_MIN_SIZE      = 3     (clusters this size or larger are established bugs)
+
+
+Phase 1: Same Bug Across Different Signatures
+
+
+cross_sig_dupes ← []
+
+// Take one representative trace per cluster
+reps ← [ (cluster_id, traces[first report], signature) for each cluster ]
+
+FOR EACH pair of clusters (A, B) that have DIFFERENT signatures:
+    sim ← sim_func(reps[A].trace, reps[B].trace)
+    IF sim >= CROSS_THRESHOLD:
+        ADD to cross_sig_dupes:
+            { cluster_a: A, cluster_b: B, similarity: sim }
+
+
+Phase 2: Mis-Bucketed Report Detection
+
+
+mis_bucketed ← []
+
+// Build a representative trace lookup for all clusters
+rep_map ← { cluster_id: traces[first report] for each cluster }
+
+FOR EACH cluster C:
+    FOR EACH non-representative report m in C:
+
+        // Step 1 : Score how well m fits its current cluster
+        own_sim ← sim_func(traces[m], rep_map[C])
+
+        // Step 2 : Find the best-fitting alternative cluster
+        best_other_sim ← -1
+        best_other_id  ← null
+        FOR EACH other cluster D (where D != C):
+            s ← sim_func(traces[m], rep_map[D])
+            IF s > best_other_sim:
+                best_other_sim ← s
+                best_other_id  ← D
+
+        // Step 3 — Flag if report fits better elsewhere AND clears the floor
+        IF best_other_sim > own_sim
+                AND best_other_sim >= REBUCKET_THRESHOLD:
+            ADD to mis_bucketed:
+                { report: m, current_cluster: C,
+                  better_cluster: best_other_id,
+                  own_sim: own_sim, better_sim: best_other_sim }
+
+
+Phase 3: Fragment Cluster Detection
+
+
+fragments      ← []
+genuine_unique ← 0
+
+// Separate clusters into two size classes
+tiny_clusters  ← [ C in clusters where |C| <= TINY_MAX_SIZE  ]
+large_clusters ← [ C in clusters where |C| >= LARGE_MIN_SIZE ]
+
+large_reps ← [ (cluster_id, traces[first report]) for each large cluster ]
+
+FOR EACH tiny cluster T:
+    rep_T ← traces[first report of T]
+
+    // Step 1: Find the closest large cluster
+    best_sim   ← -1
+    best_large ← null
+    FOR EACH (large_id, large_trace) in large_reps:
+        s ← sim_func(rep_T, large_trace)
+        IF s > best_sim:
+            best_sim   ← s
+            best_large ← large_id
+
+    // Step 2 : Classify the tiny cluster
+    IF best_sim >= FRAGMENT_THRESHOLD:
+        ADD to fragments:
+            { tiny_cluster: T, belongs_to: best_large, similarity: best_sim }
+    ELSE:
+        genuine_unique ← genuine_unique + 1   // rare but real standalone bug
+
+RETURN cross_sig_dupes, mis_bucketed, fragments
+```
+
+---
 
