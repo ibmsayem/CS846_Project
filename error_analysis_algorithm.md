@@ -1,7 +1,5 @@
 # Clustering Error Detection Algorithms
 
-
-
 ## Algorithm 1: Over-Clustering Detection
 
 > Detects clusters that **incorrectly merge** distinct bugs together.
@@ -199,4 +197,3 @@ RETURN cross_sig_dupes, mis_bucketed, fragments
 ```
 
 ---
-
