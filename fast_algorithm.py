@@ -1,12 +1,8 @@
 """
 fast_algorithm.py
-=================
-Faithful implementation of the **FaST** (Fast Stack Trace alignment)
-algorithm from:
 
-    Muller Rodrigues et al., "FaST: A linear time stack trace alignment
-    heuristic for crash report deduplication", MSR '22, May 23-24, 2022,
-    Pittsburgh, PA, USA.
+Faithful implementation of the **FaST** (Fast Stack Trace alignment) algorithm from:
+
 
 This module implements every component described in the paper:
 
