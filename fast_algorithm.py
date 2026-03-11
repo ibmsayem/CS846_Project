@@ -1,8 +1,8 @@
 """
 fast_algorithm.py
-
-Faithful implementation of the **FaST** (Fast Stack Trace alignment) algorithm from:
-
+=================
+Faithful implementation of the **FaST** (Fast Stack Trace alignment)
+algorithm from: crash report deduplication at scale with FaST
 
 This module implements every component described in the paper:
 
