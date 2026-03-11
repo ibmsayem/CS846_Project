@@ -1,90 +1,79 @@
 from __future__ import annotations
 
-import math
-from collections import Counter
-from dataclasses import dataclass, field
+import argparse
+import json
+import sys
+import time
+from collections import defaultdict
 from typing import Dict, List, Tuple
 
+from data_clean import load_crash_reports
+from fast_algorithm import (
+    DFIndex,
+    StackTrace,
+    prepare_stack_trace,
+    fast_similarity,
+    bucket_similarity,
+    find_duplicates,
+)
 
 
-# Data Structures
+# Coarse pass: group reports by Socorro signature
 
 
-@dataclass
-class FrameEntry:
-    """A single frame prepared for the FaST alignment.
+def group_by_signature(reports: List[dict]) -> Dict[str, List[dict]]:
+    """Group crash reports by their Socorro ``signature`` field.
 
-    Attributes
-
-    frame_id : str
-        Normalized subroutine/function name (the identifier *f*).
-    position : int
-        1-based position from the top of the stack trace (*p*).
-        Top-of-stack = 1.
-    weight : float
-        Pre-computed frame weight w(f_p) per Equation 1.
+    This is a cheap pre-filter; FaST is only applied *within* each group.
     """
-    frame_id: str
-    position: int
-    weight: float = 0.0
+    groups: Dict[str, List[dict]] = defaultdict(list)
+    for r in reports:
+        groups[r.get("signature", "<none>")].append(r)
+    return dict(groups)
 
 
-@dataclass
-class StackTrace:
-    """A fully preprocessed stack trace ready for FaST comparison.
-
-    Attributes
-
-    uuid : str
-        Unique identifier of the crash report.
-    signature : str
-        Socorro signature (used for coarse grouping, not by FaST itself).
-    sorted_frames : list[FrameEntry]
-        Frames sorted by (frame_id, position) ascending the input
-        format required by Algorithm 1.
-    weight_sum : float
-        Σ w(f_p) for every frame in this trace.  Pre-computed so that
-        the normalization denominator (line 23) can be looked up in O(1).
-    """
-    uuid: str
-    signature: str
-    sorted_frames: List[FrameEntry] = field(default_factory=list)
-    weight_sum: float = 0.0
-
-# Preprocessing
-# Document-Frequency Index
+# Core deduplication — online bucket assignment
 #
-# df(f) = number of stack traces in S that contain at least one frame
-#         with identifier f  (used in Equation 1).
-# |S|   = total number of stack traces in the repository.
-# This is built once from the cleaned crash reports and then used for all subsequent similarity computations.
+# For each new report q, we compute:
+#   sim'(q, B) = max_{c ∈ B} sim(q, c)   — Section 4.2
+# for every existing bucket B.  The report is assigned to the bucket
+# with the highest sim' provided it exceeds the threshold.
+# Otherwise, a new bucket is created.
 
-class DFIndex:
-    """Stores df(f) for every subroutine identifier in the repository."""
 
-    def __init__(self) -> None:
-        self._df: Counter = Counter()
-        self._total: int = 0
+def deduplicate_group(traces: List[StackTrace],
+                      gamma: float,
+                      threshold: float) -> List[List[StackTrace]]:
+    """Cluster traces within a single signature group.
 
-    @property
-    def total_traces(self) -> int:
-        """Return |S| — the total number of stack traces."""
-        return self._total
+    Uses the paper's bucket similarity (Section 4.2):
+        sim'(q, B) = max_{c ∈ B} sim(q, c)
 
-    def df(self, frame_id: str) -> int:
-        """Return df(f) — the number of traces containing *frame_id*."""
-        return self._df.get(frame_id, 0)
+    Each new trace is assigned to the bucket with the HIGHEST sim'
+    that exceeds *threshold*.  If no bucket qualifies, a new one is
+    created.
 
-    def build(self, reports: List[dict]) -> "DFIndex":
-        """Build the index from cleaned crash reports.
+    Returns a list of buckets (each bucket = list of StackTrace).
+    """
+    if len(traces) <= 1:
+        return [traces]
 
-        Each report must have a ``"frames"`` key (list of str).
-        df counts each identifier at most once per report (set semantics).
-        """
-        self._total = len(reports)
-        self._df.clear()
-        for r in reports:
-            unique_ids = set(r["frames"])   # presence, not count
-            for fid in unique_ids:
-                self._df[fid] += 1
-        return self
+    buckets: List[List[StackTrace]] = []
+
+    for st in traces:
+        best_sim = -2.0
+        best_bucket_idx = -1
+
+        for bi, bucket in enumerate(buckets):
+            # sim'(q, B) = max_{c ∈ B} sim(q, c) — Eq from Section 4.2
+            sim_prime = bucket_similarity(st, bucket, gamma)
+            if sim_prime > best_sim:
+                best_sim = sim_prime
+                best_bucket_idx = bi
+
+        if best_sim >= threshold and best_bucket_idx >= 0:
+            buckets[best_bucket_idx].append(st)
+        else:
+            buckets.append([st])
+
+    return buckets
