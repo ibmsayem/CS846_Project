@@ -165,7 +165,7 @@ FOR EACH cluster C:
 Phase 3: Fragment Cluster Detection
 
 
-fragments      ← []
+<!-- fragments      ← []
 genuine_unique ← 0
 
 // Separate clusters into two size classes
@@ -193,7 +193,7 @@ FOR EACH tiny cluster T:
     ELSE:
         genuine_unique ← genuine_unique + 1   // rare but real standalone bug
 
-RETURN cross_sig_dupes, mis_bucketed, fragments
+RETURN cross_sig_dupes, mis_bucketed, fragments -->
 ```
 
 ---
