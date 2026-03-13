@@ -11,7 +11,7 @@ import requests
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-API = "https://crash-stats.mozilla.org/api"?
+API = "https://crash-stats.mozilla.org/api"
 SUPERSEARCH_URL = f"{API}/SuperSearch/"
 MAX_WINDOW = 10_000
 
