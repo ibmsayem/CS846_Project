@@ -108,9 +108,9 @@ OUTPUT:
     fragments       : tiny clusters that are pieces of a larger bug
 
 CONSTANTS:
-    CROSS_THRESHOLD     = 0.35  (if cross-sign similarity is above this, same bug)
-    REBUCKET_THRESHOLD  = 0.30  (report only moved if alternative clears this floor)
-    FRAGMENT_THRESHOLD  = 0.20  (tiny cluster is a fragment if it clears this)
+    CROSS_THRESHOLD     = 0.35  (if cross-sign similarity is above this, same bug) Same Bug Across Different Signatures
+    REBUCKET_THRESHOLD  = 0.30  (report only moved if alternative clears this floor) Mis-Bucketed Report Detection
+    FRAGMENT_THRESHOLD  = 0.20  (tiny cluster is a fragment if it clears this) Fragment Cluster Detection
     TINY_MAX_SIZE       = 2     (clusters this size or smaller are fragment candidates)
     LARGE_MIN_SIZE      = 3     (clusters this size or larger are established bugs)
 
