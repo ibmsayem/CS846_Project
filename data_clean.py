@@ -3,10 +3,7 @@
 
 import numpy as np
 # import pandas as pd
-import re
-
-
-
+# import re
 
 
 # records = []
@@ -36,10 +33,11 @@ Each crash report is reduced to a lightweight dict:
         "frames":     List[str],   # ordered from top (index 0) to bottom
     }
 """
-
+# import re
 import json
 import re
 from typing import List, Dict, Optional, Iterator
+
 
 # 
 # Frame‑name cleaning helpers
@@ -66,15 +64,12 @@ _ANON_RE = re.compile(
 
 def clean_frame_name(function: Optional[str],
                      module: Optional[str]) -> Optional[str]:
-    """Return a normalised identifier for a single stack frame.
+    """Return a normalized identifier for a single stack frame.
 
     * If the function name is missing or looks like a raw address we try
       to fall back to ``module!offset`` so the frame still carries *some*
       information.
-    * Template parameters and argument lists are stripped so that
-      ``foo<int>(bar)`` and ``foo<float>(baz)`` map to the same id.
-    * Returns ``None`` when the frame should be dropped entirely (e.g. no
-      useful information at all).
+    * Returns ``None`` when the frame should be dropped entirely (e.g. no useful information at all).
     """
     if function and not _HEX_RE.match(function):
         name = function.strip()
@@ -103,17 +98,15 @@ def extract_frames(processed_crash: dict,
     Frames come from the *crashing thread* (``crashing_thread`` index).
     Each returned string is the normalised subroutine identifier.
 
-    Parameters
-    ----------
-    processed_crash : dict
-        The ``processed_crash`` object from the JSONL record.
-    max_frames : int, optional
+    Parameters:
+
+    processed_crash(dict):
+                    The ``processed_crash`` object from the JSONL record.
+    max_frames(int)
         If > 0, keep only the first *max_frames* frames (closest to
         the crash point).  0 means keep all.
 
-    Returns
-    -------
-    list of str
+    Returns list of str
         Cleaned frame identifiers, top of stack first.
     """
     json_dump = processed_crash.get("json_dump", {})
@@ -152,13 +145,6 @@ def iter_crash_reports(jsonl_path: str,
 
     Each yielded dict has keys ``uuid``, ``signature``, and ``frames``.
     Reports whose stack trace is empty after cleaning are silently skipped.
-
-    Parameters
-    ----------
-    jsonl_path : str
-        Path to the ``processed_crashes.jsonl`` file.
-    max_frames : int, optional
-        Forwarded to :func:`extract_frames`.
     """
     with open(jsonl_path, "r", encoding="utf-8") as fh:
         for line_no, line in enumerate(fh, start=1):
