@@ -1,24 +1,9 @@
 """
 fast_algorithm.py
-=================
-Faithful implementation of the **FaST** (Fast Stack Trace alignment)
-algorithm from: crash report deduplication at scale with FaST
-
-This module implements every component described in the paper:
-
-    Section 2.1  — Algorithm 1: FaST similarity (two-pointer linear pass)
-    Section 2.2  — Scoring scheme:
-                     Equation 1: frame weight   w(f_p)
-                     Equation 2: gap value      gap(f_p)
-                     Equation 3: match value    match(q_u, c_v)
-                     diff function              diff(u, v)
-    Section 2.3  — Normalization to [-1.0, +1.0]
-    Section 4.2  — Bucket similarity: sim'(q, B) = max_{c in B} sim(q, c)
-
-Complexity: O(m + n) per pair after the one-time sort.
+Implementation of the FaST similarity algorithm as described in:
+"FaST: Fast and Accurate Stack Trace Similarity for Software Failure Deduplication"
 
 References
-----------
 All equation / algorithm numbers refer to the MSR '22 paper above.
 Source code of the original FaST: https://github.com/irving-muller/FaST
 """
@@ -58,18 +43,15 @@ class FrameEntry:
 class StackTrace:
     """A fully preprocessed stack trace ready for FaST comparison.
 
-    Attributes
-    ----------
-    uuid : str
-        Unique identifier of the crash report.
-    signature : str
-        Socorro signature (used for coarse grouping, not by FaST itself).
-    sorted_frames : list[FrameEntry]
-        Frames sorted by (frame_id, position) ascending — the input
+    Attributes are dicussed below
+  
+    uuid(str): Unique identifier of the crash report.
+    signature(str): Socorro signature (used for coarse grouping, not by FaST itself).
+    sorted_frames (list[FrameEntry]): Frames sorted by (frame_id, position) ascending input
         format required by Algorithm 1.
-    weight_sum : float
-        Σ w(f_p) for every frame in this trace.  Pre-computed so that
-        the normalisation denominator (line 23) can be looked up in O(1).
+    weight_sum (float):
+        Σ w(f_p) for every frame in this trace.  Pre computed so that
+        the normalization denominator (line 23) can be looked up in O(1).
     """
     uuid: str
     signature: str
@@ -94,11 +76,11 @@ class DFIndex:
 
     @property
     def total_traces(self) -> int:
-        """Return |S| — the total number of stack traces."""
+        """Return |S|: the total number of stack traces."""
         return self._total
 
     def df(self, frame_id: str) -> int:
-        """Return df(f) — the number of traces containing *frame_id*."""
+        """Return df(f): the number of traces containing *frame_id*."""
         return self._df.get(frame_id, 0)
 
     def build(self, reports: List[dict]) -> "DFIndex":
@@ -117,7 +99,7 @@ class DFIndex:
 
 
 
-# Equation 1 - Frame Weight: w(f_p)
+# Equation 1: Frame Weight: w(f_p)
 #
 #   w(f_p) = 1/p^α  ×  e^{-β · df(f) / |S|}
 #
@@ -138,10 +120,8 @@ def frame_weight(position: int,
 
 
 
-# Equation 2 - Gap Value: gap(f_p) = w(f_p)
+# Equation 2: Gap Value: gap(f_p) = w(f_p)
 #
-# "The gap alignment value is equal to the weight of a frame f_p
-#  aligned to a gap."  — Section 2.2
 
 
 def gap_value(w: float) -> float:
@@ -150,12 +130,11 @@ def gap_value(w: float) -> float:
 
 
 
-# Equation 3 - Match Value: match(q_u, c_v)
+# Equation 3 : Match Value: match(q_u, c_v)
 #
 #   match(q_u, c_v) = (w(q_u) + w(c_v)) × diff(u, v)
 #
 # where diff(u, v) = e^{-γ |u − v|}
-#
 # • Uses the SUM of frame weights (unlike TraceSim which uses the MAX).
 # • diff(·) penalises position discrepancy between matched frames.
 # • γ ∈ ℝ₊ regulates the impact of position difference.
@@ -174,11 +153,9 @@ def match_value(w_q: float, w_c: float,
 
 
 
-# Preprocessing - Build StackTrace objects
+# Preprocessing: Build StackTrace objects
 #
-# Paper (Section 2.1): "As input, the similarity algorithm receives two
-# lists sorted by frame id and position in ascending order."
-# "Such sort is executed only once right after stack trace creation."
+# Paper (Section 2.1): "As input, the similarity algorithm receives two lists sorted by frame id and position in ascending order. Such sort is executed only once right after stack trace creation."
 
 
 def prepare_stack_trace(report: dict,
@@ -214,7 +191,7 @@ def prepare_stack_trace(report: dict,
 
 
 
-# Algorithm 1 - FaST Similarity
+# Algorithm 1: FaST Similarity
 #
 # Two pointers (i, j) walk through Q and C (both sorted by frame_id,
 # position).  At each step, exactly one of three cases applies:
@@ -304,7 +281,7 @@ def fast_similarity(q: StackTrace, c: StackTrace,
 
 
 
-# Section 4.2 - Bucket Similarity
+# Section 4.2: Bucket Similarity
 #
 # "The similarity between q and a bucket B is defined as:
 #    sim'(q, B) = max_{c ∈ B} sim(q, c)"
@@ -360,7 +337,7 @@ def find_duplicates(query: StackTrace,
 
 
 
-# Self-Test - Paper Example (Figure 3 + Section 2.3)
+
 
 
 if __name__ == "__main__":
