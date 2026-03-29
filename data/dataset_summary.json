@@ -1,0 +1,551 @@
+{
+  "total_bugs": 10000,
+  "total_signatures": 10678,
+  "total_rows": 14292,
+  "split_cases_count": 1501,
+  "merge_cases_count": 2049,
+  "top_split_cases": [
+    {
+      "bug_id": 1805684,
+      "num_signatures": 77,
+      "signatures": [
+        "## Code block location:",
+        "mozilla-unified/dom/html/HTMLTableCellElement.cpp:129",
+        "## Stack trace for test case hitting the not-yet-tested code block:",
+        "#0 0x7ff19be7fdb2 in mozilla::dom::HTMLTableCellElement::ParseAttribute(int, nsAtom*, nsTSubstring<char16_t> const&, nsIPrincipal*, nsAttrValue&) (/home/deskbot/caro/moz-stuff/mozilla-unified/objdir-ff-dom-layout/dist/bin/libxul.so+0x8d13db2) (BuildId: ed23eb95bf045a06dfce999577983ff844de0255)",
+        "#1 0x7ff19abb9b5d in mozilla::dom::Element::SetAttr(int, nsAtom*, nsAtom*, nsTSubstring<char16_t> const&, nsIPrincipal*, bool) (/home/deskbot/caro/moz-stuff/mozilla-unified/objdir-ff-dom-layout/dist/bin/libxul.so+0x7a4db5d) (BuildId: ed23eb95bf045a06dfce999577983ff844de0255)"
+      ]
+    },
+    {
+      "bug_id": 1773125,
+      "num_signatures": 62,
+      "signatures": [
+        "android::AudioTrack::setVolume",
+        "libaudioclient.so",
+        "libaudioclient.so@0x3de2e",
+        "libaudioclient.so@0x3dfd8",
+        "libaudioclient.so@0x41c76"
+      ]
+    },
+    {
+      "bug_id": 1793867,
+      "num_signatures": 60,
+      "signatures": [
+        "Thread 0 Crashed:: MainThread Dispatch queue: com.apple.main-thread",
+        "0   XUL                           \t       0x11a9c030c mozilla::layers::FocusState::CanIgnoreKeyboardShortcutMisses() const + 188",
+        "1   XUL                           \t       0x11a9356c3 mozilla::layers::APZCTreeManager::ReceiveInputEvent(mozilla::InputData&, std::__1::function<void (unsigned long long, mozilla::layers::APZHandledResult const&)>&&) + 5571",
+        "2   XUL                           \t       0x11a939252 non-virtual thunk to mozilla::layers::APZCTreeManager::ReceiveInputEvent(mozilla::InputData&, std::__1::function<void (unsigned long long, mozilla::layers::APZHandledResult const&)>&&) + 18",
+        "3   XUL                           \t       0x11a996fd8 mozilla::layers::APZInputBridge::ReceiveInputEvent(mozilla::WidgetInputEvent&, std::__1::function<void (unsigned long long, mozilla::layers::APZHandledResult const&)>&&) + 536"
+      ]
+    },
+    {
+      "bug_id": 1852039,
+      "num_signatures": 56,
+      "signatures": [
+        "base.odex@0x104b5d0",
+        "base.odex@0x104ee84",
+        "base.odex@0x117d20",
+        "base.odex@0x13322c",
+        "base.odex@0x13422c"
+      ]
+    },
+    {
+      "bug_id": 1860115,
+      "num_signatures": 54,
+      "signatures": [
+        "java.lang.RuntimeException: StrictMode ThreadPolicy violation",
+        "FATAL EXCEPTION: pool-13-thread-1",
+        "Process: org.mozilla.fenix.debug, PID: 20525",
+        "java.lang.RuntimeException: StrictMode ThreadPolicy violation",
+        "at org.mozilla.fenix.perf.ThreadPenaltyDeathWithIgnoresListener.penaltyDeath(ThreadPenaltyDeathWithIgnoresListener.kt:46)"
+      ]
+    },
+    {
+      "bug_id": 1758641,
+      "num_signatures": 52,
+      "signatures": [
+        "RtlpFreeHeapInternal | RtlFreeHeap | wslbdhm64.dll | RtlFreeHeap",
+        "RtlpLowFragHeapAllocFromContext | RtlpAllocateHeapInternal | wslbdhm64.dll | RtlFreeHeap | wslbdhm64.dll | RtlFreeHeap",
+        "RtlpLowFragHeapAllocFromContext | RtlpAllocateHeapInternal | wslbdhm64.dll | RtlFreeHeap | wslbdhm64.dll | RtlpAllocateHeapInternal",
+        "RtlpFreeHeapInternal | RtlFreeHeap | wslbdhm64.dll | RtlpFreeHeapInternal | wslbdhm64.dll | RtlpAllocateHeapInternal | CreateStringCopy_AnsiToUnicode",
+        "RtlpLowFragHeapAllocFromContext | RtlpAllocateHeapInternal | wslbdhm64.dll | RtlFreeHeap"
+      ]
+    },
+    {
+      "bug_id": 1923711,
+      "num_signatures": 51,
+      "signatures": [
+        "java.lang.OutOfMemoryError: at org.mozilla.thirdparty.com.google.android.exoplayer2.BasePlayer.seekTo(BasePlayer.java)",
+        "java.lang.OutOfMemoryError: at org.mozilla.thirdparty.com.google.android.exoplayer2.decoder.CryptoInfo.<init>(CryptoInfo.java)",
+        "java.lang.OutOfMemoryError: at org.mozilla.thirdparty.com.google.android.exoplayer2.DefaultLoadControl.assertGreaterOrEqual(DefaultLoadControl.java)",
+        "java.lang.OutOfMemoryError: at org.mozilla.thirdparty.com.google.android.exoplayer2.ExoPlayer$Builder.<init>(ExoPlayer.java)",
+        "java.lang.OutOfMemoryError: at org.mozilla.thirdparty.com.google.android.exoplayer2.ExoPlayerImpl$PlaybackInfoUpdate.<init>(ExoPlayerImpl.java)"
+      ]
+    },
+    {
+      "bug_id": 1856799,
+      "num_signatures": 51,
+      "signatures": [
+        "(unloaded asepkcs.dll@0x6d150) | UserCallWinProcCheckWow",
+        "(unloaded asepkcs.dll@0x334f0) | patched_BaseThreadInitThunk",
+        "(unloaded asepkcs.dll@0x67aee) | BaseThreadInitThunk",
+        "(unloaded asepkcs.dll@0x34760) | patched_BaseThreadInitThunk",
+        "(unloaded asepkcs.dll@0x6ad30) | UserCallWinProcCheckWow"
+      ]
+    },
+    {
+      "bug_id": 1732075,
+      "num_signatures": 45,
+      "signatures": [
+        "java.lang.IllegalStateException: SET SESSION: Current activity: CustomTabActivity hashcode 122034635 Other activity: MainActivity hashcode 124848962",
+        "FATAL EXCEPTION: main",
+        "Process: org.mozilla.focus.debug, PID: 8000",
+        "java.lang.IllegalStateException: SET SESSION: Current activity: CustomTabActivity hashcode 122034635 Other activity: MainActivity hashcode 124848962",
+        "at mozilla.components.browser.engine.gecko.GeckoEngineView.render(GeckoEngineView.kt:129)"
+      ]
+    },
+    {
+      "bug_id": 1879285,
+      "num_signatures": 43,
+      "signatures": [
+        "TypeError: sourceActor is null",
+        "React Component Stack",
+        "componentStack",
+        "in Connect(SourceFooter)",
+        "in div"
+      ]
+    },
+    {
+      "bug_id": 1860116,
+      "num_signatures": 40,
+      "signatures": [
+        "java.lang.RuntimeException: StrictMode ThreadPolicy violation",
+        "FATAL EXCEPTION: pool-13-thread-3",
+        "Process: org.mozilla.fenix.debug, PID: 20525",
+        "java.lang.RuntimeException: StrictMode ThreadPolicy violation",
+        "at org.mozilla.fenix.perf.ThreadPenaltyDeathWithIgnoresListener.penaltyDeath(ThreadPenaltyDeathWithIgnoresListener.kt:46)"
+      ]
+    },
+    {
+      "bug_id": 1771978,
+      "num_signatures": 39,
+      "signatures": [
+        "java.lang.RuntimeException: at mozilla.components.browser.engine.gecko.GeckoEngine$$ExternalSyntheticLambda10.onShutdown(R8$$SyntheticClass:5)",
+        "java.lang.RuntimeException: at mozilla.components.browser.engine.gecko.GeckoEngine$$ExternalSyntheticLambda12.onShutdown(R8$$SyntheticClass:5)",
+        "java.lang.RuntimeException: at mozilla.components.browser.engine.gecko.GeckoEngine$$ExternalSyntheticLambda15.onShutdown(Unknown Source)",
+        "java.lang.RuntimeException: at mozilla.components.browser.engine.gecko.GeckoEngine$$ExternalSyntheticLambda15.onShutdown(Unknown Source:1)",
+        "java.lang.RuntimeException: at mozilla.components.browser.engine.gecko.GeckoEngine$$ExternalSyntheticLambda16.onShutdown(Unknown Source)"
+      ]
+    },
+    {
+      "bug_id": 1861746,
+      "num_signatures": 37,
+      "signatures": [
+        "java.lang.NullPointerException: at mozilla.telemetry.glean.internal.BooleanMetric.set(glean.kt)",
+        "java.lang.NullPointerException: at mozilla.telemetry.glean.internal.BooleanMetric.set(glean.kt:76)",
+        "java.lang.NullPointerException: at mozilla.telemetry.glean.internal.BooleanMetric.set(glean.kt:79)",
+        "java.lang.NullPointerException: at mozilla.telemetry.glean.internal.CounterMetric.add(glean.kt)",
+        "java.lang.NullPointerException: at mozilla.telemetry.glean.internal.CounterMetric.add(glean.kt:76)"
+      ]
+    },
+    {
+      "bug_id": 1826583,
+      "num_signatures": 36,
+      "signatures": [
+        "libwayland-client.so.0@0x6c9d",
+        "libwayland-client.so.0@0xbad9",
+        "libwayland-client.so.0@0xb5a9",
+        "libwayland-client.so.0@0xb9ad",
+        "libwayland-client.so.0@0xbdf8"
+      ]
+    },
+    {
+      "bug_id": 1694104,
+      "num_signatures": 36,
+      "signatures": [
+        "kobs1j_d.dll | kobs1j_c.dll | kobs1j_d.dll",
+        "kobs1j_d.dll",
+        "kobs2j_d.dll | kobs2j_c.dll | kobs2j_d.dll",
+        "kobs2j_d.dll",
+        "kobs2jad.dll"
+      ]
+    },
+    {
+      "bug_id": 1907215,
+      "num_signatures": 34,
+      "signatures": [
+        "java.lang.IllegalStateException: Cannot perform this action on a sealed instance.",
+        "at android.view.accessibility.AccessibilityNodeInfo.enforceNotSealed(AccessibilityNodeInfo.java:2958)",
+        "at android.view.accessibility.AccessibilityNodeInfo.setSource(AccessibilityNodeInfo.java:788)",
+        "at android.view.accessibility.AccessibilityNodeInfo.obtain(AccessibilityNodeInfo.java:2990)",
+        "at org.mozilla.geckoview.SessionAccessibility$NodeProvider.getNodeFromGecko(SessionAccessibility.java:358)"
+      ]
+    },
+    {
+      "bug_id": 1737810,
+      "num_signatures": 33,
+      "signatures": [
+        "libxul.so@0x5cd4f5e | libxul.so@0x50373ac",
+        "libxul.so@0x5cf579e | libxul.so@0x5046d1c",
+        "libxul.so@0x5ca281e | libxul.so@0x4ffe0ac",
+        "<rayon_core::job::HeapJob<BODY> as rayon_core::job::Job>::execute",
+        "libxul.so@0x5fed53e | libxul.so@0x5352079 | libxul.so@0x5351f9b | libxul.so@0x5590c2a | libxul.so@0x77d4726 | libxul.so@0x5110466 | libxul.so@0x87c6aaf | libxul.so@0x87eb42f | firefox@0x13c55"
+      ]
+    },
+    {
+      "bug_id": 1757018,
+      "num_signatures": 26,
+      "signatures": [
+        "java.lang.NullPointerException: at org.mozilla.focus.fragment.UrlInputFragment.onTextChange$app_focusNightly(UrlInputFragment.kt:111)",
+        "java.lang.NullPointerException: at org.mozilla.focus.fragment.UrlInputFragment.onTextChange$app_focusRelease(Unknown Source)",
+        "java.lang.NullPointerException: at org.mozilla.focus.fragment.UrlInputFragment.onTextChange$app_focusRelease(UrlInputFragment.kt:100)",
+        "java.lang.NullPointerException: at org.mozilla.focus.fragment.UrlInputFragment.onTextChange$app_focusRelease(UrlInputFragment.kt:105)",
+        "java.lang.NullPointerException: at org.mozilla.focus.fragment.UrlInputFragment.onTextChange$app_focusRelease(UrlInputFragment.kt:106)"
+      ]
+    },
+    {
+      "bug_id": 1706421,
+      "num_signatures": 26,
+      "signatures": [
+        "data@app@org.mozilla.firefox-2@base.apk@classes.dex@0x1d70f52",
+        "libart.so@0xe5b4e | data@app@org.mozilla.firefox-2@base.apk@classes.dex@0x1c1284d",
+        "libart.so@0xe5b4e | data@app@org.mozilla.firefox-1@base.apk@classes.dex@0x1c1284d",
+        "libart.so@0xe5c7e | data@app@org.mozilla.firefox-2@base.apk@classes.dex@0x1c11ead",
+        "libart.so@0xe5d9e | data@app@org.mozilla.firefox-2@base.apk@classes.dex@0x1c1250d"
+      ]
+    },
+    {
+      "bug_id": 1761479,
+      "num_signatures": 25,
+      "signatures": [
+        "hpc6r093.dll | hpcbr093.dll | DrvStretchBlt",
+        "hp1100gc.dll",
+        "hpbpro.dll | XcvDataNotSupportedByReturn",
+        "hpygidui20.dll",
+        "hpb6sy2917_x64gui.dll | <unknown in winspool.drv>"
+      ]
+    }
+  ],
+  "top_merge_cases": [
+    {
+      "signature": "mozalloc_handle_oom(unsigned int)",
+      "num_bugs": 34,
+      "bug_ids": [
+        1734145,
+        1709206,
+        1723672,
+        1729304,
+        1704985,
+        1669404,
+        1734045,
+        1717917,
+        1688733,
+        1708449
+      ]
+    },
+    {
+      "signature": "MOZ_Crash",
+      "num_bugs": 32,
+      "bug_ids": [
+        1803777,
+        1802116,
+        1809414,
+        1892875,
+        1792523,
+        1803281,
+        1797661,
+        1907748,
+        1803948,
+        1817901
+      ]
+    },
+    {
+      "signature": "??",
+      "num_bugs": 31,
+      "bug_ids": [
+        1825408,
+        1665432,
+        1842847,
+        1685925,
+        1866545,
+        1851569,
+        1660465,
+        1842617,
+        1690683,
+        1773628
+      ]
+    },
+    {
+      "signature": "mozalloc_handle_oom",
+      "num_bugs": 25,
+      "bug_ids": [
+        1820562,
+        1662354,
+        1733524,
+        1662227,
+        1939864,
+        1755163,
+        1719324,
+        1780767,
+        1834530,
+        1829290
+      ]
+    },
+    {
+      "signature": "_g_log_abort",
+      "num_bugs": 21,
+      "bug_ids": [
+        1809155,
+        1867782,
+        1749513,
+        1712908,
+        1675661,
+        1851919,
+        1792794,
+        1794337,
+        1868069,
+        1743143
+      ]
+    },
+    {
+      "signature": "MOZ_Crash(char const*, int, char const*)",
+      "num_bugs": 21,
+      "bug_ids": [
+        1795202,
+        1792132,
+        1799057,
+        1804829,
+        1807519,
+        1791519,
+        1793067,
+        1805619,
+        1805620,
+        1806013
+      ]
+    },
+    {
+      "signature": "mozglue_static::panic_hook",
+      "num_bugs": 21,
+      "bug_ids": [
+        1680647,
+        1655305,
+        1687818,
+        1701271,
+        1654936,
+        1676450,
+        1665187,
+        1703849,
+        1686954,
+        1701559
+      ]
+    },
+    {
+      "signature": "RustMozCrash",
+      "num_bugs": 20,
+      "bug_ids": [
+        1981315,
+        1988743,
+        1897361,
+        1758098,
+        1703461,
+        2013487,
+        1748788,
+        1748021,
+        1787581,
+        1742526
+      ]
+    },
+    {
+      "signature": "nsDebugImpl::Abort",
+      "num_bugs": 18,
+      "bug_ids": [
+        1987685,
+        1989062,
+        1948613,
+        1872255,
+        1990569,
+        1947338,
+        1743063,
+        1737119,
+        1924269,
+        1919481
+      ]
+    },
+    {
+      "signature": "nsAutoOwningThread::AssertCurrentThreadOwnsMe(char const*) const",
+      "num_bugs": 18,
+      "bug_ids": [
+        1818371,
+        1749956,
+        1770630,
+        1666663,
+        1682892,
+        1817901,
+        1663533,
+        1783247,
+        1803281,
+        1696210
+      ]
+    },
+    {
+      "signature": "wl_log",
+      "num_bugs": 18,
+      "bug_ids": [
+        1736601,
+        1768260,
+        1820293,
+        1809350,
+        1750488,
+        1803016,
+        1739780,
+        1709254,
+        1739339,
+        1767916
+      ]
+    },
+    {
+      "signature": "__epoll_pwait + 0xa",
+      "num_bugs": 18,
+      "bug_ids": [
+        1748514,
+        1752867,
+        1715205,
+        1747046,
+        1797351,
+        1767528,
+        1805609,
+        1763261,
+        1759632,
+        1759631
+      ]
+    },
+    {
+      "signature": "get",
+      "num_bugs": 16,
+      "bug_ids": [
+        1941825,
+        1757188,
+        1764933,
+        1863782,
+        1851847,
+        1991465,
+        1935785,
+        1942924,
+        1900878,
+        1752917
+      ]
+    },
+    {
+      "signature": "MOZ_CrashSequence",
+      "num_bugs": 15,
+      "bug_ids": [
+        1998529,
+        1969153,
+        1975459,
+        1984100,
+        1979780,
+        1991494,
+        1948514,
+        1990536,
+        1953673,
+        2009260
+      ]
+    },
+    {
+      "signature": "NS_DispatchToMainThread",
+      "num_bugs": 14,
+      "bug_ids": [
+        1873413,
+        1992901,
+        1680873,
+        1774122,
+        1735403,
+        1752044,
+        1806989,
+        1721770,
+        1781808,
+        1984754
+      ]
+    },
+    {
+      "signature": "OOM | small",
+      "num_bugs": 14,
+      "bug_ids": [
+        1851428,
+        1764356,
+        1660710,
+        1749192,
+        1784233,
+        1721164,
+        1699340,
+        1738510,
+        1673778,
+        1674132
+      ]
+    },
+    {
+      "signature": "std::sys::backtrace::__rust_end_short_backtrace",
+      "num_bugs": 13,
+      "bug_ids": [
+        1924000,
+        1978822,
+        1984934,
+        2016072,
+        1956585,
+        1918634,
+        1980173,
+        1919186,
+        1918420,
+        1933434
+      ]
+    },
+    {
+      "signature": "mozilla::ThreadEventTarget::Dispatch",
+      "num_bugs": 13,
+      "bug_ids": [
+        1812544,
+        1856087,
+        1774310,
+        1925450,
+        1930893,
+        1921998,
+        1988051,
+        1814771,
+        1806932,
+        1914103
+      ]
+    },
+    {
+      "signature": "__pthread_kill | pthread_kill | abort | gpusGenerateCrashLog.cold.1",
+      "num_bugs": 12,
+      "bug_ids": [
+        1696358,
+        1783212,
+        1713230,
+        1692399,
+        1738289,
+        1711801,
+        1716153,
+        1711802,
+        1714235,
+        1711804
+      ]
+    },
+    {
+      "signature": "libc.so + 0x8db67",
+      "num_bugs": 12,
+      "bug_ids": [
+        1716224,
+        1706688,
+        1704289,
+        1662916,
+        1710060,
+        1716204,
+        1681743,
+        1684274,
+        1681620,
+        1701397
+      ]
+    }
+  ]
+}
