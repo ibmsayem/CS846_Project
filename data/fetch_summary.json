@@ -1,0 +1,9 @@
+{
+  "total_signatures_selected": 511,
+  "split_sigs": 200,
+  "merge_sigs": 200,
+  "clean_sigs": 100,
+  "priority_sigs": 11,
+  "reports_fetched": 510,
+  "reports_failed": 80
+}
