@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Fetch crash UUIDs from Socorro SuperSearch, download full ProcessedCrash JSON, store as JSONL."""
-
 #
 
 import argparse, json, logging, os, random, time
@@ -13,7 +12,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 
 API = "https://crash-stats.mozilla.org/api"
 SUPERSEARCH_URL = f"{API}/SuperSearch/"
-MAX_WINDOW = 10_000
+MAX_WINDOW = 100000
 
 
 def backoff(base, attempt):
