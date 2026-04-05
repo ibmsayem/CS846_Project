@@ -25,7 +25,6 @@ class FrameEntry:
     """A single frame prepared for the FaST alignment.
 
     Attributes
-    ----------
     frame_id : str
         Normalised subroutine / function name (the identifier *f*).
     position : int
@@ -122,13 +121,9 @@ def frame_weight(position: int,
 
 # Equation 2: Gap Value: gap(f_p) = w(f_p)
 #
-
-
 def gap_value(w: float) -> float:
     """Compute gap(f_p) = w(f_p)  (Equation 2)."""
     return w
-
-
 
 # Equation 3 : Match Value: match(q_u, c_v)
 #
@@ -150,7 +145,6 @@ def match_value(w_q: float, w_c: float,
                 gamma: float = 0.1) -> float:
     """match(q_u, c_v) = (w(q_u) + w(c_v)) × diff(u, v)  (Equation 3)."""
     return (w_q + w_c) * diff(pos_q, pos_c, gamma)
-
 
 
 # Preprocessing: Build StackTrace objects
@@ -334,11 +328,6 @@ def find_duplicates(query: StackTrace,
         scored.append((s, st))
     scored.sort(key=lambda x: x[0], reverse=True)
     return scored[:top_k]
-
-
-
-
-
 
 if __name__ == "__main__":
     # ---- Figure 3 example: Q = adca, C = daccb --------------------------
