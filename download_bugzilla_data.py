@@ -18,8 +18,8 @@ GROUND_TRUTH_FILE = os.path.join(OUTPUT_DIR, "ground_truth.csv")
 SUMMARY_FILE = os.path.join(OUTPUT_DIR, "dataset_summary.json")
 
 LIMIT_PER_PAGE = 500       # Bugzilla max per request
-MAX_BUGS = 10000            # Total bugs to download (adjust as needed)
-REQUEST_DELAY = 1.0        # Seconds between requests (be polite)
+MAX_BUGS = 10000            # Total bugs to download can be asjusted
+REQUEST_DELAY = 1.0        # Seconds between requests. if 0.2-0.5s it will hit the pagination limit
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -28,10 +28,8 @@ def download_bugs():
     """
     Query Bugzilla REST API for bugs with non-empty ```cf_crash_signature``` and  saving each bug as one line in a JSONL file.
     """
-    print("="*60)
-    print("DOWNLOADING BUGS FROM BUGZILLA")
-    print("="*60)
 
+    print("DOWNLOADING BUGS FROM BUGZILLA")
     url = "https://bugzilla.mozilla.org/rest/bug"
     all_bugs = []
     offset = 0
