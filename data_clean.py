@@ -64,12 +64,7 @@ _ANON_RE = re.compile(
 
 def clean_frame_name(function: Optional[str],
                      module: Optional[str]) -> Optional[str]:
-    """Return a normalized identifier for a single stack frame.
-
-    * If the function name is missing or looks like a raw address we try
-      to fall back to ``module!offset`` so the frame still carries *some*
-      information.
-    * Returns ``None`` when the frame should be dropped entirely (e.g. no useful information at all).
+    """Return a normalized identifier for a single stack frame. Returns ``None`` when the frame should be dropped entirely (e.g. no useful information at all).
     """
     if function and not _HEX_RE.match(function):
         name = function.strip()
@@ -93,21 +88,11 @@ def clean_frame_name(function: Optional[str],
 
 def extract_frames(processed_crash: dict,
                    max_frames: int = 0) -> List[str]:
-    """Extract the cleaned frame list from a processed crash payload.
+    """Extract the cleaned frame list from frames come from the *crashing thread* (``crashing_thread`` index). each returned string is the normalised subroutine identifier.
 
-    Frames come from the *crashing thread* (``crashing_thread`` index).
-    Each returned string is the normalised subroutine identifier.
-
-    Parameters:
-
-    processed_crash(dict):
+    Parameters: processed_crash(dict):
                     The ``processed_crash`` object from the JSONL record.
-    max_frames(int)
-        If > 0, keep only the first *max_frames* frames (closest to
-        the crash point).  0 means keep all.
-
-    Returns list of str
-        Cleaned frame identifiers, top of stack first.
+    Returns list of str Cleaned frame identifiers, top of stack first.
     """
     json_dump = processed_crash.get("json_dump", {})
     threads = json_dump.get("threads", [])
@@ -141,10 +126,7 @@ def extract_frames(processed_crash: dict,
 
 def iter_crash_reports(jsonl_path: str,
                        max_frames: int = 0) -> Iterator[Dict]:
-    """Yield cleaned crash‑report dicts from *jsonl_path*.
-
-    Each yielded dict has keys ``uuid``, ``signature``, and ``frames``.
-    Reports whose stack trace is empty after cleaning are silently skipped.
+    """Iterate over crash reports in a JSONL file, yielding cleaned dicts. where wach yielded dict has keys ``uuid``, ``signature``, and ``frames``. Reports whose stack trace is empty after cleaning are silently skipped.
     """
     with open(jsonl_path, "r", encoding="utf-8") as fh:
         for line_no, line in enumerate(fh, start=1):
@@ -179,7 +161,7 @@ def load_crash_reports(jsonl_path: str,
 
 
 
-# Quick sanity check when run directly
+# Example usage quick test when run as a script
 
 if __name__ == "__main__":
     import sys
