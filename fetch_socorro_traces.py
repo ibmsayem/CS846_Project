@@ -1,9 +1,6 @@
 """
 Fetch Stack Traces from Socorro:
-
 Loads ground_truth.csv, selects interesting signatures (split cases, merge cases, clean cases), then fetches real crash reports with stack frames from Socorro's public API.
-
-
     pip install requests
     python fetch_socorro_traces.py
 """
@@ -15,7 +12,7 @@ import time
 import os
 from collections import defaultdict
 
-# ── CONFIG ──
+# config and constants
 DATA_DIR = "data"
 GROUND_TRUTH_FILE = os.path.join(DATA_DIR, "ground_truth.csv")
 CRASH_REPORTS_FILE = os.path.join(DATA_DIR, "crash_reports.jsonl")
@@ -30,19 +27,19 @@ REQUEST_DELAY = 1.0          # seconds between API calls
 os.makedirs(DATA_DIR, exist_ok=True)
 
 # ── MUST-INCLUDE SIGNATURES (your manually verified cases) ──
-PRIORITY_SIGNATURES = {
-    "PRMJ_Now()": [817396],
-    "@0x0 | PRMJ_Now()": [817396],
-    "IncrementalCollectSlice": [817396],
-    "PRMJ_Now": [817396],
-    "@0x0 | PRMJ_Now": [817396],
-    "mozilla::ShouldClearTargets": [1462746],
-    "static bool mozilla::ShouldClearTargets": [1462746],
-    "OOM | large | mozalloc_abort | xul.dll | _PR_NativeRunThread | pr_root": [1725571],
-    "OOM | large | mozalloc_abort | mozalloc_handle_oom | gkrust_shared::oom_hook::hook | std::alloc::rust_oom | webrender_bindings::bindings::wr_state_new": [1531819],
-    "OOM | large | mozalloc_abort | mozalloc_handle_oom | moz_xmalloc | std::basic_string<T>::_Reallocate_grow_by<T>": [1626318],
-    "OOM | large | mozalloc_abort | moz_xmalloc | mozilla::SPSCRingBufferBase<T>::SPSCRingBufferBase": [1757618],
-}
+# PRIORITY_SIGNATURES = {
+#     "PRMJ_Now()": [817396],
+#     "@0x0 | PRMJ_Now()": [817396],
+#     "IncrementalCollectSlice": [817396],
+#     "PRMJ_Now": [817396],
+#     "@0x0 | PRMJ_Now": [817396],
+#     "mozilla::ShouldClearTargets": [1462746],
+#     "static bool mozilla::ShouldClearTargets": [1462746],
+#     "OOM | large | mozalloc_abort | xul.dll | _PR_NativeRunThread | pr_root": [1725571],
+#     "OOM | large | mozalloc_abort | mozalloc_handle_oom | gkrust_shared::oom_hook::hook | std::alloc::rust_oom | webrender_bindings::bindings::wr_state_new": [1531819],
+#     "OOM | large | mozalloc_abort | mozalloc_handle_oom | moz_xmalloc | std::basic_string<T>::_Reallocate_grow_by<T>": [1626318],
+#     "OOM | large | mozalloc_abort | moz_xmalloc | mozilla::SPSCRingBufferBase<T>::SPSCRingBufferBase": [1757618],
+# }
 
 
 
@@ -68,13 +65,13 @@ def load_ground_truth():
             bug_to_sigs[bug_id].append(sig)
 
     # Also add priority signatures to the mappings
-    for sig, bug_ids in PRIORITY_SIGNATURES.items():
-        for bid in bug_ids:
-            sig_to_bugs[sig].add(str(bid))
-            if sig not in bug_to_sigs[str(bid)]:
-                bug_to_sigs[str(bid)].append(sig)
+    # for sig, bug_ids in PRIORITY_SIGNATURES.items():
+    #     for bid in bug_ids:
+    #         sig_to_bugs[sig].add(str(bid))
+    #         if sig not in bug_to_sigs[str(bid)]:
+    #             bug_to_sigs[str(bid)].append(sig)
 
-    return gt_rows, sig_to_bugs, bug_to_sigs
+    # return gt_rows, sig_to_bugs, bug_to_sigs
 
 
 def select_signatures(sig_to_bugs, bug_to_sigs):
@@ -85,7 +82,7 @@ def select_signatures(sig_to_bugs, bug_to_sigs):
     2. Merge cases (1 sig -> multiple bugs)
     3. Clean cases (1 sig <-> 1 bug)
     """
-    selected = set(PRIORITY_SIGNATURES.keys())
+    # selected = set(PRIORITY_SIGNATURES.keys())
     print(f"  Priority signatures (always included): {len(selected)}")
 
     split_sigs = set()
@@ -135,20 +132,20 @@ def fetch_crash_ids(signature, n=REPORTS_PER_SIGNATURE):
     columns = "&_columns=uuid&_columns=signature&_columns=date&_columns=platform&_columns=product&_columns=version"
     results = f"&_results_number={n}"
 
-    # Strategy 1: Build URL manually with proper encoding of just the signature value
+    # Build URL manually with proper encoding of just the signature value
     encoded_sig = urllib.parse.quote(signature, safe="")
     url = f"{base_url}?signature=%3D{encoded_sig}{columns}{results}"
 
     try:
         resp = requests.get(url, timeout=30)
 
-        # Strategy 2: Contains match with manually encoded signature
+        # Contains match with manually encoded signature
         if resp.status_code == 400:
             url = f"{base_url}?signature=%7E{encoded_sig}{columns}{results}"
             time.sleep(REQUEST_DELAY)
             resp = requests.get(url, timeout=30)
 
-        # Strategy 3: Strip ALL special chars, search with just alphanumeric words
+        # Strip ALL special chars, search with just alphanumeric words
         if resp.status_code == 400:
             import re
             # Keep only alphanumeric, underscores, spaces
@@ -216,8 +213,7 @@ def fetch_crash_ids(signature, n=REPORTS_PER_SIGNATURE):
 
 def fetch_stack_frames(crash_id):
     """
-    Fetch processed crash from Socorro to get crashing thread frames.
-    Returns dict with crash_id, frames, metadata — or None if unavailable.
+    Fetch processed crash from Socorro to get crashing thread frames. Returns dict with crash_id, frames, metadata — or None if unavailable.
     """
     url = "https://crash-stats.mozilla.org/api/ProcessedCrash/"
     params = {"crash_id": crash_id}
@@ -372,7 +368,7 @@ if __name__ == "__main__":
         "split_sigs": len(split_sigs),
         "merge_sigs": len(merge_sigs),
         "clean_sigs": len(clean_sigs),
-        "priority_sigs": len(PRIORITY_SIGNATURES),
+        # "priority_sigs": len(PRIORITY_SIGNATURES),
         "reports_fetched": total_ok,
         "reports_failed": total_fail,
     }
