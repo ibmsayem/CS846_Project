@@ -10,9 +10,9 @@ from pathlib import Path
 INPUT_CSV  = "ground_truth_full.csv"
 OUTPUT_DIR = Path(".")
 
-# ── Load ──────────────────────────────────────
+# Loading the full ground truth CSV
 df = pd.read_csv(INPUT_CSV)
-print(f"Loaded {len(df)} rows")
+print(f"Loaded {len(df)} rows") 
 print(f"Unique signatures : {df['signature'].nunique()}")
 print(f"Unique bug IDs    : {df['bug_id'].nunique()}")
 print(f"Unique crashes    : {df['uuid'].nunique()}")
