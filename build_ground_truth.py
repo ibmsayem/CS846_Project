@@ -143,8 +143,8 @@ def fetch_all_parallel(id_records, output_jsonl_path):
     Writes each result immediately to the JSONL file (streaming).
     Returns list of all successfully fetched crashes.
     """
-    log.info("Fetching %d full crash reports (%d parallel workers) …",
-             len(id_records), WORKERS)
+    # log.info("Fetching %d full crash reports (%d parallel workers) …",
+    #          len(id_records), WORKERS)
 
     full_crashes = []
     done_count   = [0]   # mutable counter for threads
@@ -159,31 +159,31 @@ def fetch_all_parallel(id_records, output_jsonl_path):
         time.sleep(DELAY_SEC)
         return crash
 
-    with ThreadPoolExecutor(max_workers=WORKERS) as executor:
-        futures = {executor.submit(worker, rec): rec for rec in id_records}
+    # with ThreadPoolExecutor(max_workers=WORKERS) as executor:
+    #     futures = {executor.submit(worker, rec): rec for rec in id_records}
 
-        for future in as_completed(futures):
-            rec   = futures[future]
-            crash = future.result()
+    #     for future in as_completed(futures):
+    #         rec   = futures[future]
+    #         crash = future.result()
 
-            with write_lock:
-                done_count[0] += 1
-                if crash:
-                    full_crashes.append(crash)
-                    out_file.write(json.dumps(crash, default=str) + "\n")
-                    out_file.flush()
-                else:
-                    failed_count[0] += 1
+    #         with write_lock:
+    #             done_count[0] += 1
+    #             if crash:
+    #                 full_crashes.append(crash)
+    #                 out_file.write(json.dumps(crash, default=str) + "\n")
+    #                 out_file.flush()
+    #             else:
+    #                 failed_count[0] += 1
 
-                # Progress every 500
-                if done_count[0] % 500 == 0 or done_count[0] == len(id_records):
-                    log.info("  Progress: %d / %d  (ok=%d  fail=%d)",
-                             done_count[0], len(id_records),
-                             len(full_crashes), failed_count[0])
+    #             # Progress every 500
+    #             if done_count[0] % 500 == 0 or done_count[0] == len(id_records):
+    #                 log.info("  Progress: %d / %d  (ok=%d  fail=%d)",
+    #                          done_count[0], len(id_records),
+    #                          len(full_crashes), failed_count[0])
 
-    out_file.close()
-    log.info("  → %d crash reports saved, %d failed.", len(full_crashes), failed_count[0])
-    return full_crashes
+    # out_file.close()
+    # log.info("  → %d crash reports saved, %d failed.", len(full_crashes), failed_count[0])
+    # return full_crashes
 
 
 def main():
