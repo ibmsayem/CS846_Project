@@ -32,10 +32,9 @@ def group_by_signature(reports: List[dict]) -> Dict[str, List[dict]]:
     return dict(groups)
 
 
-# Core deduplication — online bucket assignment
-#
+# Core deduplication logic: cluster traces within each signature group using the paper's bucket similarity (Section 4.2):
 # For each new report q, we compute:
-#   sim'(q, B) = max_{c ∈ B} sim(q, c)   — Section 4.2
+#   sim'(q, B) = max_{c ∈ B} sim(q, c)
 # for every existing bucket B.  The report is assigned to the bucket
 # with the highest sim' provided it exceeds the threshold.
 # Otherwise, a new bucket is created.
@@ -46,7 +45,7 @@ def deduplicate_group(traces: List[StackTrace],
                       threshold: float) -> List[List[StackTrace]]:
     """Cluster traces within a single signature group.
 
-    Uses the paper's bucket similarity (Section 4.2):
+    Uses the paper's bucket similarity
         sim'(q, B) = max_{c ∈ B} sim(q, c)
 
     Each new trace is assigned to the bucket with the HIGHEST sim'

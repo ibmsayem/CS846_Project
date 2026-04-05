@@ -1,7 +1,8 @@
 """
 Evaluate FaST Clusters:
-Usage:
-    python3 evaluate.py
+Usage: python3 evaluate.py
+
+Not all the portions of this code are used in the final evaluation, but they are left here for reference and potential future use.
 """
 
 import json
@@ -9,7 +10,7 @@ import os
 import csv
 from collections import defaultdict
 
-# ── CONFIG ──
+#intial setup: define file paths and load data
 DATA_DIR = "data"
 RESULTS_DIR = "results"
 GROUND_TRUTH_FILE = os.path.join(DATA_DIR, "ground_truth.csv")
@@ -22,8 +23,6 @@ os.makedirs(RESULTS_DIR, exist_ok=True)
 
 
 # DATA LOADING
-
-
 def load_ground_truth():
     """Load ground_truth.csv into sig -> set of bug_ids mapping."""
     sig_to_bugs = defaultdict(set)
@@ -232,15 +231,15 @@ def compute_pairwise_metrics(clusters, crash_to_bug):
 # F-MEASURE (Van Rijsbergen, 1974)
 
 
-def f_measure(precision, recall, alpha=0.5):
-    """
-    Van Rijsbergen's F-measure:
-    F = 1 / (α * (1/P) + (1-α) * (1/R))
-    With α=0.5, this is the harmonic mean.
-    """
-    if precision == 0 or recall == 0:
-        return 0.0
-    return 1.0 / (alpha * (1.0 / precision) + (1.0 - alpha) * (1.0 / recall))
+# def f_measure(precision, recall, alpha=0.5):
+#     """
+#     Van Rijsbergen's F-measure:
+#     F = 1 / (α * (1/P) + (1-α) * (1/R))
+#     With α=0.5, this is the harmonic mean.
+#     """
+#     if precision == 0 or recall == 0:
+#         return 0.0
+#     return 1.0 / (alpha * (1.0 / precision) + (1.0 - alpha) * (1.0 / recall))
 
 
 # EVALUATE ONE CLUSTERING
@@ -264,8 +263,8 @@ def evaluate_clustering(clusters, crash_to_bug, bug_to_crashes, N, label):
     print(f"  Inverse Purity:      {inv_purity:.4f}")
 
     # F(Purity, Inverse Purity)
-    f_pur = f_measure(purity, inv_purity)
-    print(f"  F(Purity, InvPur):   {f_pur:.4f}")
+    # f_pur = f_measure(purity, inv_purity)
+    # print(f"  F(Purity, InvPur):   {f_pur:.4f}")
 
     # Pairwise Precision & Recall
     pair_prec, pair_rec, SS, SD, DS = compute_pairwise_metrics(
@@ -275,8 +274,8 @@ def evaluate_clustering(clusters, crash_to_bug, bug_to_crashes, N, label):
     print(f"  Pairwise Recall:     {pair_rec:.4f}  (SS={SS}, DS={DS})")
 
     # F(Pairwise)
-    f_pair = f_measure(pair_prec, pair_rec)
-    print(f"  F(Pair Prec, Rec):   {f_pair:.4f}")
+    # f_pair = f_measure(pair_prec, pair_rec)
+    # print(f"  F(Pair Prec, Rec):   {f_pair:.4f}")
 
     # Count merge and split errors
     crash_to_cluster = {}
@@ -307,10 +306,10 @@ def evaluate_clustering(clusters, crash_to_bug, bug_to_crashes, N, label):
         "clusters": len(clusters),
         "purity": round(purity, 4),
         "inverse_purity": round(inv_purity, 4),
-        "f_purity_inv": round(f_pur, 4),
+        # "f_purity_inv": round(f_pur, 4),
         "pair_precision": round(pair_prec, 4),
         "pair_recall": round(pair_rec, 4),
-        "f_pairwise": round(f_pair, 4),
+        # "f_pairwise": round(f_pair, 4),
         "merge_errors": merge_errors,
         "split_errors": split_errors,
     }
@@ -320,7 +319,7 @@ def evaluate_clustering(clusters, crash_to_bug, bug_to_crashes, N, label):
 
 if __name__ == "__main__":
     print("=" * 70)
-    print("STEP 4: EVALUATE CLUSTERS")
+    print("EVALUATE CLUSTERS")
     print("Metrics: Purity, Inverse Purity, Pairwise Precision & Recall")
     print("=" * 70)
 
