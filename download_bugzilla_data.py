@@ -26,8 +26,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def download_bugs():
     """
-    Query Bugzilla REST API for bugs with non-empty cf_crash_signature.
-    Saves each bug as one line in a JSONL file.
+    Query Bugzilla REST API for bugs with non-empty ```cf_crash_signature``` and  saving each bug as one line in a JSONL file.
     """
     print("="*60)
     print("DOWNLOADING BUGS FROM BUGZILLA")
@@ -78,8 +77,7 @@ def download_bugs():
 def parse_crash_signatures(raw_field):
     """
     Parse Bugzilla's cf_crash_signature field.
-    Format: [@SignatureName] on each line.
-    Returns list of clean signature strings.
+    Format: [@SignatureName] on each line whih returns list of clean signature strings.
     """
     if not raw_field:
         return []
@@ -104,14 +102,12 @@ def parse_crash_signatures(raw_field):
 
 def build_ground_truth(bugs):
     """
-    Build ground truth table from downloaded bugs.
+    Build ground truth table from downloaded bugs. Also trying to identify split cases and merge cases automatically.
     Each row: crash_signature -> true_bug_id
-
-    Also identifies split cases and merge cases automatically.
+  
     """
     print("\n" + "="*60)
     print("BUILDING GROUND TRUTH")
-    print("="*60)
 
     # Flat table: signature -> bug_id
     gt_rows = []
@@ -140,40 +136,40 @@ def build_ground_truth(bugs):
         writer.writerows(gt_rows)
     
     # ── Append our manually verified cases ──
-    manual_rows = [
-        {"crash_signature": "PRMJ_Now()", "true_bug_id": 817396, "bug_summary": "crash in PRMJ_Now"},
-        {"crash_signature": "@0x0 | PRMJ_Now()", "true_bug_id": 817396, "bug_summary": "crash in PRMJ_Now"},
-        {"crash_signature": "IncrementalCollectSlice", "true_bug_id": 817396, "bug_summary": "crash in PRMJ_Now"},
-        {"crash_signature": "PRMJ_Now", "true_bug_id": 817396, "bug_summary": "crash in PRMJ_Now"},
-        {"crash_signature": "@0x0 | PRMJ_Now", "true_bug_id": 817396, "bug_summary": "crash in PRMJ_Now"},
-        {"crash_signature": "mozilla::ShouldClearTargets", "true_bug_id": 1462746, "bug_summary": "Crash in mozilla::ShouldClearTargets"},
-        {"crash_signature": "static bool mozilla::ShouldClearTargets", "true_bug_id": 1462746, "bug_summary": "Crash in mozilla::ShouldClearTargets"},
-        {"crash_signature": "OOM | large | mozalloc_abort | xul.dll | _PR_NativeRunThread | pr_root", "true_bug_id": 1725571, "bug_summary": "Windows 7 x86 OOM crash"},
-        {"crash_signature": "OOM | large | mozalloc_abort | mozalloc_handle_oom | gkrust_shared::oom_hook::hook | std::alloc::rust_oom | webrender_bindings::bindings::wr_state_new", "true_bug_id": 1531819, "bug_summary": "OOM crash in webrender"},
-        {"crash_signature": "OOM | large | mozalloc_abort | mozalloc_handle_oom | moz_xmalloc | std::basic_string<T>::_Reallocate_grow_by<T>", "true_bug_id": 1626318, "bug_summary": "OOM crash in input handling"},
-        {"crash_signature": "OOM | large | mozalloc_abort | moz_xmalloc | mozilla::SPSCRingBufferBase<T>::SPSCRingBufferBase", "true_bug_id": 1757618, "bug_summary": "OOM crash in audio ring buffer"},
-    ]
+    # manual_rows = [
+    #     {"crash_signature": "PRMJ_Now()", "true_bug_id": 817396, "bug_summary": "crash in PRMJ_Now"},
+    #     {"crash_signature": "@0x0 | PRMJ_Now()", "true_bug_id": 817396, "bug_summary": "crash in PRMJ_Now"},
+    #     {"crash_signature": "IncrementalCollectSlice", "true_bug_id": 817396, "bug_summary": "crash in PRMJ_Now"},
+    #     {"crash_signature": "PRMJ_Now", "true_bug_id": 817396, "bug_summary": "crash in PRMJ_Now"},
+    #     {"crash_signature": "@0x0 | PRMJ_Now", "true_bug_id": 817396, "bug_summary": "crash in PRMJ_Now"},
+    #     {"crash_signature": "mozilla::ShouldClearTargets", "true_bug_id": 1462746, "bug_summary": "Crash in mozilla::ShouldClearTargets"},
+    #     {"crash_signature": "static bool mozilla::ShouldClearTargets", "true_bug_id": 1462746, "bug_summary": "Crash in mozilla::ShouldClearTargets"},
+    #     {"crash_signature": "OOM | large | mozalloc_abort | xul.dll | _PR_NativeRunThread | pr_root", "true_bug_id": 1725571, "bug_summary": "Windows 7 x86 OOM crash"},
+    #     {"crash_signature": "OOM | large | mozalloc_abort | mozalloc_handle_oom | gkrust_shared::oom_hook::hook | std::alloc::rust_oom | webrender_bindings::bindings::wr_state_new", "true_bug_id": 1531819, "bug_summary": "OOM crash in webrender"},
+    #     {"crash_signature": "OOM | large | mozalloc_abort | mozalloc_handle_oom | moz_xmalloc | std::basic_string<T>::_Reallocate_grow_by<T>", "true_bug_id": 1626318, "bug_summary": "OOM crash in input handling"},
+    #     {"crash_signature": "OOM | large | mozalloc_abort | moz_xmalloc | mozilla::SPSCRingBufferBase<T>::SPSCRingBufferBase", "true_bug_id": 1757618, "bug_summary": "OOM crash in audio ring buffer"},
+    # ]
 
     # Remove duplicates — only append if signature+bug_id pair doesn't already exist
     existing_pairs = {(row["crash_signature"], str(row["true_bug_id"])) for row in gt_rows}
-    new_rows = [r for r in manual_rows if (r["crash_signature"], str(r["true_bug_id"])) not in existing_pairs]
+    # new_rows = [r for r in manual_rows if (r["crash_signature"], str(r["true_bug_id"])) not in existing_pairs]
 
-    if new_rows:
-        with open(GROUND_TRUTH_FILE, "a", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=["crash_signature", "true_bug_id", "bug_summary"])
-            writer.writerows(new_rows)
-        gt_rows.extend(new_rows)
-        print(f"  Appended {len(new_rows)} manually verified rows ({len(manual_rows) - len(new_rows)} were already present)")
+    # if new_rows:
+    #     with open(GROUND_TRUTH_FILE, "a", newline="", encoding="utf-8") as f:
+    #         writer = csv.DictWriter(f, fieldnames=["crash_signature", "true_bug_id", "bug_summary"])
+    #         writer.writerows(new_rows)
+    #     gt_rows.extend(new_rows)
+    #     print(f"  Appended {len(new_rows)} manually verified rows ({len(manual_rows) - len(new_rows)} were already present)")
 
     print(f"  Total rows: {len(gt_rows)}")
     print(f"  Unique signatures: {len(sig_to_bugs)}")
     print(f"  Unique bugs: {len(bug_to_sigs)}")
     print(f"  Saved -> {GROUND_TRUTH_FILE}")
 
-    # ── Find SPLIT cases: 1 bug -> multiple signatures ──
+    # find SPLIT cases: 1 bug -> multiple signatures
     split_cases = {bid: sigs for bid, sigs in bug_to_sigs.items() if len(sigs) > 1}
 
-    # ── Find MERGE cases: 1 signature -> multiple bugs ──
+    # find MERGE cases: 1 signature -> multiple bugs
     merge_cases = {sig: list(bids) for sig, bids in sig_to_bugs.items() if len(bids) > 1}
 
     print(f"\n  SPLIT cases (1 bug -> multiple signatures): {len(split_cases)}")
@@ -195,7 +191,7 @@ def build_ground_truth(bugs):
             print(f"      -> Bugs: {bids[:5]}{'...' if len(bids)>5 else ''}")
         count += 1
 
-    # ── Save summary ──
+    # Save summary of split/merge cases for reporting
     summary = {
         "total_bugs": len(bug_to_sigs),
         "total_signatures": len(sig_to_bugs),
@@ -244,10 +240,7 @@ if __name__ == "__main__":
     gt_rows, split_cases, merge_cases = build_ground_truth(bugs)
 
     print("\n" + "="*60)
-    print("STEP 1 COMPLETE")
-    print("="*60)
     print(f"  Files created:")
     print(f"    {JSONL_FILE}           <- raw bug data (JSONL)")
     print(f"    {GROUND_TRUTH_FILE}    <- signature-to-bug mapping")
     print(f"    {SUMMARY_FILE}   <- split/merge case summary")
-    print(f"\n  Next step: fetch stack traces from Socorro for these signatures.")
