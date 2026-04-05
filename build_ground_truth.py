@@ -1,12 +1,6 @@
 """
 
-Fetches FULL processed crash reports (same structure as Socorro's ProcessedCrash API)
-and maps each to its Bugzilla bug ID.
-
-Outputs:
-  crash_reports.jsonl    — one full processed crash per line
-  bug_associations.jsonl — one bug-signature association per line
-  ground_truth_full.csv  — flat mapping: crash_id | bug_id | signature
+Fetches FULL processed crash reports (same structure as Socorro's ProcessedCrash API) and maps each to its Bugzilla bug ID.
 
 """
 
@@ -26,13 +20,13 @@ BASE_URL    = "https://crash-stats.mozilla.org/api"
 API_TOKEN   = os.environ.get("CRASHSTATS_API_TOKEN", "")
 
 PRODUCT     = "Firefox"
-DATE_FROM   = ">=2026-03-10"
-DATE_TO     = "<2026-03-17"
-MAX_CRASHES = 10_000       # Total full crash reports to fetch
+DATE_FROM   = ">=2026-03-10" # adjustable
+DATE_TO     = "<2026-03-17" # adjustable
+MAX_CRASHES = 10000       # Total full crash reports to fetch
 BATCH_SIZE  = 100          # SuperSearch page size (max 100)
-WORKERS     = 10           # Parallel threads for ProcessedCrash API calls
-                           # Increase to 20 if you have a token; keep at 5 without one
-DELAY_SEC   = 0.2          # Per-thread delay between calls (be polite)
+# WORKERS     = 10           # Parallel threads for ProcessedCrash API calls
+#                            # Increase to 20 if you have a token; keep at 5 without one
+DELAY_SEC   = 0.2          # Per-thread delay between calls to avoid page limit hitting rate limits 
 OUTPUT_DIR  = Path(".")
 
 logging.basicConfig(
@@ -53,10 +47,10 @@ def make_session():
     })
     return s
 
-
+"""Fetch up to MAX_CRASHES crash IDs + signatures via SuperSearch."""
 def get_crash_ids(session):
-    """Fetch up to MAX_CRASHES crash IDs + signatures via SuperSearch."""
-    log.info("Step 1: Collecting crash IDs via SuperSearch …")
+
+    log.info("Collecting crash IDs via SuperSearch …")
     records = []
     offset  = 0
 
@@ -114,9 +108,10 @@ def fetch_one(crash_id, session):
         return None
 
 
+"""Map signatures → Bugzilla bug IDs."""
 def get_bug_associations(session, signatures, chunk_size=20):
-    """Map signatures → Bugzilla bug IDs."""
-    log.info("Step 3: Fetching bug associations for %d unique signatures …", len(signatures))
+
+    log.info("Fetching bug associations for %d unique signatures …", len(signatures))
     sig_to_bugs = {}
 
     for i in range(0, len(signatures), chunk_size):
@@ -148,7 +143,7 @@ def fetch_all_parallel(id_records, output_jsonl_path):
     Writes each result immediately to the JSONL file (streaming).
     Returns list of all successfully fetched crashes.
     """
-    log.info("Step 2: Fetching %d full crash reports (%d parallel workers) …",
+    log.info("Fetching %d full crash reports (%d parallel workers) …",
              len(id_records), WORKERS)
 
     full_crashes = []
@@ -195,21 +190,21 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     session = make_session()
 
-    # Step 1 — Collect crash IDs
+    # Collect crash IDs
     id_records = get_crash_ids(session)
     if not id_records:
         log.error("No crash IDs found. Check dates / product / network.")
         return
 
-    # Step 2 — Fetch full crash reports in parallel (streaming to JSONL)
+    # Fetch full crash reports in parallel (streaming to JSONL)
     crash_jsonl_path = OUTPUT_DIR / "crash_reports.jsonl"
     full_crashes     = fetch_all_parallel(id_records, crash_jsonl_path)
 
-    # Step 3 — Fetch bug associations
+    #Fetch bug associations
     unique_sigs = list({c.get("signature", "") for c in full_crashes if c.get("signature")})
     sig_to_bugs = get_bug_associations(session, unique_sigs)
 
-    # Step 4 — Write bug_associations.jsonl
+    # Write bug_associations.jsonl
     sig_to_crash_ids = defaultdict(list)
     for c in full_crashes:
         sig_to_crash_ids[c.get("signature", "")].append(c["crash_id"])
@@ -229,7 +224,7 @@ def main():
             f.write(json.dumps(r, default=str) + "\n")
     log.info("Saved → bug_associations.jsonl  (%d lines)", len(bug_records))
 
-    # Step 5 — Write ground_truth_full.csv  (crash_id | bug_id | signature)
+    #Write ground_truth_full.csv  (crash_id | bug_id | signature)
     rows = []
     for c in full_crashes:
         sig  = c.get("signature", "")
@@ -245,7 +240,7 @@ def main():
     log.info("Saved → ground_truth_full.csv  (%d rows)", len(gt_df))
 
     # Summary
-    log.info("── Summary ─────────────────────────────────────────────────")
+    log.info("Summary is given below")
     log.info("  crash_reports.jsonl    → %d full crash reports", len(full_crashes))
     log.info("  bug_associations.jsonl → %d bug-signature pairs", len(bug_records))
     log.info("  ground_truth_full.csv  → %d matched rows (crash × bug)", len(gt_df))
@@ -255,3 +250,13 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+"""
+Outputs generated:
+  crash_reports.jsonl: one full processed crash per line
+  bug_associations.jsonl: one bug-signature association per line
+  ground_truth_full.csv: flat mapping: crash_id | bug_id | signature
+
+"""
